@@ -1,0 +1,128 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>    
+        .navbar-glow {
+            width: 100%;
+            min-height: 6rem;
+            position: relative;
+            z-index: 1;
+            background-color: rgba(30, 30, 80, 255);
+            font-style: italic;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .nav-item{
+            background-color: transparent;
+            border: none;
+        }
+        .nav-item:hover{
+            transform: scale(1.15);
+        }
+        .nav-link{
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .nav-link:hover{
+            color: white;
+        }
+        .navbar-brand{
+            font-weight: bold;
+            color: white;
+        }
+        .menu-icon {
+            font-size: 34px;
+            color: #fff;
+            cursor: pointer;
+            background-color: rgba(30, 30, 80, 255);
+            margin-left: 3rem;
+        }
+    </style>
+</head>
+
+<nav class="navbar navbar-expand-lg navbar-glow">
+    <a class="navbar-brand" id="logo" href="#">SPOTTER</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated and not user.is_superuser %}
+                <button class="nav-item" id="favorites"><a class="nav-link" href="{% url 'favorites' %}">FAVORITES</a></button>
+            {% endif %}        
+            <button class="nav-item" id="books"><a class="nav-link" href="{% url 'books' %}">BOOKS</a></button>
+            <button class="nav-item" id="authors"><a class="nav-link" href="{% url 'authors' %}">AUTHORS</a></button>
+            {% if user.is_authenticated and user.is_superuser %}
+                <button class="nav-item" id="add-book"><a class="nav-link" href="{% url 'add_book' %}">ADD BOOK</a></button>
+                <button class="nav-item" id="add-author"><a class="nav-link" href="{% url 'add_author' %}">ADD AUTHOR</a></button>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <button class="nav-item" id="logoutButton"><a class="nav-link" href="#">LOGOUT</a></button>
+            {% else %}
+                <button class="nav-item" id="loginButton"><a class="nav-link" href="#">LOGIN</a></button>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const logoutButton = document.getElementById('logoutButton');
+        if(logoutButton){
+            logoutButton.addEventListener('click', function(event){
+                event.preventDefault();
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                window.location.href = "{% url 'logout' %}";
+            });
+        }
+
+        const loginButton = document.getElementById('loginButton');
+        if(loginButton){
+            loginButton.addEventListener('click', function(event){
+                event.preventDefault();
+                window.location.href = "{% url 'login' %}";
+            });
+        }
+
+        const favorites = document.getElementById('favorites');
+        const authors = document.getElementById('authors');
+        const books = document.getElementById('books');
+        const add_book = document.getElementById('add-book');
+        const add_author = document.getElementById('add-author');
+        const logo_elem = document.getElementById('logo');
+
+        logo_elem.href = `${location.origin}/books`;
+
+        function decorate(elem){
+            elem.style.borderBottom = 'solid #fff 2px';
+        }
+
+        function highlightCurrentLink() {
+            const currentPath = window.location.pathname;
+            if(currentPath.includes('login')){
+                decorate(loginButton);
+            }
+            else if(currentPath.includes('favorites')){
+                decorate(favorites);
+            }
+            else if(currentPath.includes('add_book')){
+                decorate(add_book);
+            } 
+            else if (currentPath.includes('add_author')) {
+                decorate(add_author);
+            }
+            else if (currentPath.includes('books')) {
+                decorate(books);
+            }
+            else if(currentPath.includes('authors')){
+                decorate(authors);
+            }
+        }
+        highlightCurrentLink();
+    });
+</script>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Author</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">    <title>authors</title>
+    <script src="../../static/js/utils.js"></script>
+   <style>
+        .form-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #343a40;
+        }
+        .form-group label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+            border-color: #007bff;
+        }
+        .btn-primary {
+            background-color: #0069d9;
+            border-color: #0062cc;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .btn-primary:focus, .btn-primary.focus {
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+        }
+        .img-preview {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Edit Author</h2>
+        <form id="editAuthorForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" name="first_name" id="first_name" class="form-control" value="{{ form.first_name.value }}" required />
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" name="last_name" id="last_name" class="form-control" value="{{ form.last_name.value }}" required />
+            </div>
+            <div class="mb-3">
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ form.date_of_birth.value|date:'Y-m-d' }}" />
+            </div>
+            <div class="mb-3">
+                <label for="biography" class="form-label">Biography</label>
+                <textarea name="biography" id="biography" class="form-control">{{ form.biography.value }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Cover Image</label>
+                {% if form.instance.image %}
+                    <img src="{{ form.instance.image.url }}" alt="Author image" class="img-preview">
+                {% endif %}
+                <input type="file" name="image" id="image" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Update Author</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('editAuthorForm');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(form)
+
+        const url = `{% url 'authors' id %}`;
+        const success_url = `{% url 'authors' %}`;
+        sendRequest(url, 'POST', formData, success_url);
+    });
+</script>
+
+</body>
+</html>
